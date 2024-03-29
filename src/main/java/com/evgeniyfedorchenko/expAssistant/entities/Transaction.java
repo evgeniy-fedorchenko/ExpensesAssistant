@@ -1,5 +1,7 @@
 package com.evgeniyfedorchenko.expAssistant.entities;
 
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
+import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,11 +16,16 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    int accountTo;
+
+    CurrencyShortName currency;
+
+    BigDecimal sum;
+
     Category category;
 
-    BigDecimal dollarSum;
-
     ZonedDateTime dateTime;
+
 
     @ManyToOne
     @JoinColumn(name = "limit_id")
@@ -33,20 +40,36 @@ public class Transaction {
         this.id = id;
     }
 
+    public int getAccountTo() {
+        return accountTo;
+    }
+
+    public void setAccountTo(int accountTo) {
+        this.accountTo = accountTo;
+    }
+
+    public CurrencyShortName getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(CurrencyShortName currency) {
+        this.currency = currency;
+    }
+
+    public BigDecimal getSum() {
+        return sum;
+    }
+
+    public void setSum(BigDecimal sum) {
+        this.sum = sum;
+    }
+
     public Category getCategory() {
         return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public BigDecimal getDollarSum() {
-        return dollarSum;
-    }
-
-    public void setDollarSum(BigDecimal dollarSum) {
-        this.dollarSum = dollarSum;
     }
 
     public ZonedDateTime getDateTime() {

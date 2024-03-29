@@ -1,5 +1,6 @@
 package com.evgeniyfedorchenko.expAssistant.entities;
 
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
