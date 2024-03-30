@@ -2,37 +2,46 @@ package com.evgeniyfedorchenko.expAssistant.dto;
 
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
+import jakarta.validation.constraints.*;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.ZonedDateTime;
 
+@Validated
 public class TransactionInputDto {
 
-    int accountTo;
+    /* Принимаем строку, так как по условию это "Целочисленный тип данных, 10 знаков", но нельзя проверить это
+       аннотацией @Max, тк её параметр value имеет тип Integer, в который не влазит 9_999_999_999 (10 цифр) */
+    @Pattern(regexp = "^\\d{10}$", message = "Invalid counterpart's account")
+    String accountTo;
 
-    int accountFrom;
+    String accountFrom;   // Переводить деньги можно только со своего счета, так что этот параметр всегда одинаков
 
+    @NotNull(message = "Currency can not be empty")
     CurrencyShortName currency;
 
-    double sum;
+    @Positive(message = "Sum must be positive")
+    Double sum;
 
+    @NotNull(message = "Category can not be empty")
     Category expenseCategory;
 
+    @PastOrPresent(message = "Transaction's date must be past or present")
     ZonedDateTime dateTime;
 
-
-    public int getAccountTo() {
+    public String getAccountTo() {
         return accountTo;
     }
 
-    public void setAccountTo(int accountTo) {
+    public void setAccountTo(String accountTo) {
         this.accountTo = accountTo;
     }
 
-    public int getAccountFrom() {
+    public String getAccountFrom() {
         return accountFrom;
     }
 
-    public void setAccountFrom(int accountFrom) {
+    public void setAccountFrom(String accountFrom) {
         this.accountFrom = accountFrom;
     }
 
@@ -44,11 +53,11 @@ public class TransactionInputDto {
         this.currency = currency;
     }
 
-    public double getSum() {
+    public Double getSum() {
         return sum;
     }
 
-    public void setSum(double sum) {
+    public void setSum(Double sum) {
         this.sum = sum;
     }
 

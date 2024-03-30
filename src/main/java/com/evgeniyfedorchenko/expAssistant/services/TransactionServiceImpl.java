@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction newTransaction = new Transaction();
 
-        newTransaction.setAccountTo(inputDto.getAccountTo());
+        newTransaction.setAccountTo(Long.parseLong(inputDto.getAccountTo()));
         newTransaction.setCurrency(inputDto.getCurrency());
         newTransaction.setSum(BigDecimal.valueOf(inputDto.getSum()));
         newTransaction.setCategory(inputDto.getExpenseCategory());

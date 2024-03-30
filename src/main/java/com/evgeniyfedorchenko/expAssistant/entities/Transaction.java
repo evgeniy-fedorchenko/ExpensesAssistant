@@ -16,7 +16,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    int accountTo;
+    long accountTo;
 
     CurrencyShortName currency;
 
@@ -40,11 +40,11 @@ public class Transaction {
         this.id = id;
     }
 
-    public int getAccountTo() {
+    public long getAccountTo() {
         return accountTo;
     }
 
-    public void setAccountTo(int accountTo) {
+    public void setAccountTo(long accountTo) {
         this.accountTo = accountTo;
     }
 
