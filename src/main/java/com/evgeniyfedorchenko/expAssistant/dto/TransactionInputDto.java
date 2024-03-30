@@ -2,7 +2,10 @@ package com.evgeniyfedorchenko.expAssistant.dto;
 
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
-import jakarta.validation.constraints.*;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.ZonedDateTime;
@@ -15,18 +18,21 @@ public class TransactionInputDto {
     @Pattern(regexp = "^\\d{10}$", message = "Invalid counterpart's account")
     String accountTo;
 
+    @Nullable
     String accountFrom;   // Переводить деньги можно только со своего счета, так что этот параметр всегда одинаков
 
     @NotNull(message = "Currency can not be empty")
     CurrencyShortName currency;
 
+//    @Min(value = 12, message = "min annotation")
     @Positive(message = "Sum must be positive")
     Double sum;
 
     @NotNull(message = "Category can not be empty")
     Category expenseCategory;
 
-    @PastOrPresent(message = "Transaction's date must be past or present")
+    // TODO: 30.03.2024 Раскомментить перед сдачей
+//    @PastOrPresent(message = "Transaction's date must be past or present")
     ZonedDateTime dateTime;
 
     public String getAccountTo() {

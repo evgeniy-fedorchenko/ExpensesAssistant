@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface LimitRepository extends JpaRepository<Limit, Long> {
 
-    @Query(value = "SELECT * FROM limits WHERE id = (SELECT MAX(id) FROM table)", nativeQuery = true)
+    @Query(value = "SELECT * FROM limits WHERE id = (SELECT MAX(id) FROM limits)", nativeQuery = true)
     Optional<Limit> findByMaxId();
 }

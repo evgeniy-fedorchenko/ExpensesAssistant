@@ -1,19 +1,19 @@
 package com.evgeniyfedorchenko.expAssistant.services;
 
 import com.evgeniyfedorchenko.expAssistant.entities.Limit;
+import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.repositories.LimitRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Service
 public class LimitServiceImpl implements LimitService {
 
-    private static final BigDecimal DEFAULT_LIMIT_VALUE = new BigDecimal(1000);
+    private static final BigDecimal DEFAULT_LIMIT_VALUE = new BigDecimal(1_000);
 
     private final LimitRepository limitRepository;
 
@@ -28,11 +28,14 @@ public class LimitServiceImpl implements LimitService {
 
     @Override
     public Limit createNewDefaultLimit(Category category) {
+        // TODO: 30.03.2024 Если хватит времени - реализовать помесячное автоматическое обновление лимитов
+        /* Создаем ДЕФОЛТНЫЙ лимит как бы в начале месяца (а по факту в момент первой транзакции в этом месяце) -
+           - имитация автоматического создания дефолтного лимита реально в начале месяца */
         Limit newDefaultLimit = new Limit();
 
         newDefaultLimit.setForCategory(category);
         newDefaultLimit.setDatetimeStarts(getStartOfMonth());
-        newDefaultLimit.setValue(DEFAULT_LIMIT_VALUE);
+        newDefaultLimit.setUsdValue(DEFAULT_LIMIT_VALUE);
 
         return limitRepository.save(newDefaultLimit);
 
@@ -43,16 +46,16 @@ public class LimitServiceImpl implements LimitService {
         Limit newCastomLimit = new Limit();
 
         newCastomLimit.setForCategory(forCategory);
-        newCastomLimit.setDatetimeStarts(getStartOfMonth());
-        newCastomLimit.setValue(value);
+        newCastomLimit.setDatetimeStarts(ZonedDateTime.now());
+        newCastomLimit.setUsdValue(value);
 
         limitRepository.save(newCastomLimit);
     }
 
-    private ZonedDateTime getStartOfMonth() {
+    @Override
+    public void addTransaction(Transaction newTransaction, Limit actualLimit) {
+        Limit updatedLimit = actualLimit.addTransaction(newTransaction);
+        limitRepository.save(updatedLimit);
 
-        return ZonedDateTime.now()
-                .withDayOfMonth(1)
-                .with(LocalTime.MIN);
     }
 }

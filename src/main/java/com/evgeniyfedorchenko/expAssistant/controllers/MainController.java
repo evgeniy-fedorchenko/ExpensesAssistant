@@ -1,7 +1,7 @@
 package com.evgeniyfedorchenko.expAssistant.controllers;
 
 import com.evgeniyfedorchenko.expAssistant.dto.TransactionInputDto;
-import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
+import com.evgeniyfedorchenko.expAssistant.dto.TransactionOverLimitDto;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.services.LimitService;
 import com.evgeniyfedorchenko.expAssistant.services.TransactionService;
@@ -45,7 +45,7 @@ public class MainController {
 
     @GetMapping
     @Operation(summary = "Get all transactions that have exceeded specific limit")
-    public List<Transaction> getOverLimitTransactions() {
+    public List<TransactionOverLimitDto> getOverLimitTransactions() {
         return transactionService.findOverLimitTransactions();
     }
 }
