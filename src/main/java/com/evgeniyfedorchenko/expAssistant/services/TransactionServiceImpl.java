@@ -1,22 +1,29 @@
 package com.evgeniyfedorchenko.expAssistant.services;
 
 import com.evgeniyfedorchenko.expAssistant.dto.TransactionInputDto;
+import com.evgeniyfedorchenko.expAssistant.dto.TransactionOverLimitDto;
 import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
+import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import com.evgeniyfedorchenko.expAssistant.repositories.TransactionRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName.*;
+
 /**
  * Обрабатываем команды от пользователя
- * */
-
+ */
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
+    public static final Long DEFAULT_ACCOUNT_FROM_VALUE = 9_265_749_302L;
     private final TransactionRepository transactionRepository;
     private final LimitService limitService;
     private final ExchangeRateService exchangeRateService;
@@ -31,17 +38,24 @@ public class TransactionServiceImpl implements TransactionService {
 
     /**
      * Внести в таблицу новую транзакцию
-     * */
+     */
     @Override
     public boolean commitTransaction(TransactionInputDto inputDto) {
-
+        /*
+        - accountTo
+        - sum
+        - currency
+        - category
+        - dateTime
+        - limitExceeded
+        - limit   */
         Transaction newTransaction = new Transaction();
 
         newTransaction.setAccountTo(Long.parseLong(inputDto.getAccountTo()));
-        newTransaction.setCurrency(inputDto.getCurrency());
-        newTransaction.setSum(BigDecimal.valueOf(inputDto.getSum()));
         newTransaction.setCategory(inputDto.getExpenseCategory());
         newTransaction.setDateTime(inputDto.getDateTime());
+        newTransaction.setSum(BigDecimal.valueOf(inputDto.getSum()));
+        newTransaction.setCurrency(inputDto.getCurrency());
 
         long accountFrom =  inputDto.getAccountFrom() == null
                 ? DEFAULT_ACCOUNT_FROM_VALUE

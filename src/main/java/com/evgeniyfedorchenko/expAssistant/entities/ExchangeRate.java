@@ -20,6 +20,7 @@ public class ExchangeRate {
 
     CurrencyShortName currencyTo;
 
+    @Column(columnDefinition = "DECIMAL(35,5)")
     BigDecimal exchangeRate;
 
     LocalDate calculationDate;

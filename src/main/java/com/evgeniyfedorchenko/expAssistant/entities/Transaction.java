@@ -18,14 +18,17 @@ public class Transaction {
 
     long accountTo;
 
-    CurrencyShortName currency;
+    long accountFrom;
 
     BigDecimal sum;
+
+    CurrencyShortName currency;
 
     Category category;
 
     ZonedDateTime dateTime;
 
+    boolean limitExceeded;
 
     @ManyToOne
     @JoinColumn(name = "limit_id")
@@ -48,12 +51,12 @@ public class Transaction {
         this.accountTo = accountTo;
     }
 
-    public CurrencyShortName getCurrency() {
-        return currency;
+    public long getAccountFrom() {
+        return accountFrom;
     }
 
-    public void setCurrency(CurrencyShortName currency) {
-        this.currency = currency;
+    public void setAccountFrom(long accountFrom) {
+        this.accountFrom = accountFrom;
     }
 
     public BigDecimal getSum() {
@@ -62,6 +65,14 @@ public class Transaction {
 
     public void setSum(BigDecimal sum) {
         this.sum = sum;
+    }
+
+    public CurrencyShortName getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(CurrencyShortName currency) {
+        this.currency = currency;
     }
 
     public Category getCategory() {
@@ -78,6 +89,14 @@ public class Transaction {
 
     public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public boolean isLimitExceeded() {
+        return limitExceeded;
+    }
+
+    public void setLimitExceeded(boolean limitExceeded) {
+        this.limitExceeded = limitExceeded;
     }
 
     public Limit getLimit() {
