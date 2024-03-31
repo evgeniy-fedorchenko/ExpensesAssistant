@@ -1,8 +1,10 @@
 package com.evgeniyfedorchenko.expAssistant.mappers;
 
 import com.evgeniyfedorchenko.expAssistant.dto.TransactionOverLimitDto;
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import com.evgeniyfedorchenko.expAssistant.services.TransactionServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,6 +15,9 @@ import java.time.ZonedDateTime;
 @Component
 public class TransactionOverLimitMapper {
 
+    @Value("${local-zoned-id}")
+    private String localZonedId;
+
     public TransactionOverLimitDto toDto(Object[] result) {
         TransactionOverLimitDto dto = new TransactionOverLimitDto();
 
@@ -22,7 +27,7 @@ public class TransactionOverLimitMapper {
         dto.setTrscnCurrency(CurrencyShortName.values()[(short) result[1]]);
         dto.setTransactionSum(new BigDecimal(result[2].toString()));
 
-        dto.setExpenseCategory(CurrencyShortName.values()[(short) result[3]]);
+        dto.setExpenseCategory(Category.values()[(short) result[3]]);
         dto.setTransactionDateTime(convertFromObject(result[4]));
 
         dto.setLimitValue(new BigDecimal(result[5].toString()));
@@ -34,7 +39,7 @@ public class TransactionOverLimitMapper {
 
     private ZonedDateTime convertFromObject(Object object) {
         Instant dateTime = (Instant) object;
-        ZoneId zonedId = ZoneId.of("Europe/Moscow");
+        ZoneId zonedId = ZoneId.of(localZonedId);
 
         return dateTime.atZone(zonedId);
     }

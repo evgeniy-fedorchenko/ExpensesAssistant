@@ -1,5 +1,6 @@
 package com.evgeniyfedorchenko.expAssistant.exceptions.handler;
 
+import com.evgeniyfedorchenko.expAssistant.exceptions.InvalidControllerParameterException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -34,6 +34,11 @@ public class GlobalExceptionHandler {
                         .append("\n")
                 );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
+    }
+
+    @ExceptionHandler(InvalidControllerParameterException.class)    // Невалидные параметры inputDto
+    public ResponseEntity<String> handleInvalidControllerParameterException(InvalidControllerParameterException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)    // Невалидные значения параметров пути в контроллере

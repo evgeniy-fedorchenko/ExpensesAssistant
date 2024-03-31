@@ -18,7 +18,6 @@ import java.util.List;
 @Tag(name = "User's available actions")
 @Validated
 @RestController
-@RequestMapping(path = "/user-actions")
 public class MainController {
 
     private final TransactionService transactionService;
@@ -30,20 +29,20 @@ public class MainController {
         this.limitService = limitService;
     }
 
-    @PostMapping
+    @PostMapping(path = "/transaction")
     @Operation(summary = "Register the new transaction")
-    public boolean commitTransaction(@RequestBody @Valid TransactionInputDto transactionInputDto) {
-        return transactionService.commitTransaction(transactionInputDto);
+    public void commitTransaction(@RequestBody @Valid TransactionInputDto transactionInputDto) {
+        transactionService.commitTransaction(transactionInputDto);
     }
 
-    @PutMapping(path = "/limit")
+    @PostMapping(path = "/limit")
     @Operation(summary = "Set new limit for future transactions")
     public void setNewLimit(@RequestParam Category forCategory,
                             @RequestParam @Positive(message = "Limit value must be positive") BigDecimal value) {
         limitService.createNewCustomLimit(forCategory, value);
     }
 
-    @GetMapping
+    @GetMapping(path = "over-limit")
     @Operation(summary = "Get all transactions that have exceeded specific limit")
     public List<TransactionOverLimitDto> getOverLimitTransactions() {
         return transactionService.findOverLimitTransactions();

@@ -4,6 +4,7 @@ import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +15,8 @@ import java.time.ZonedDateTime;
 public class TransactionInputDto {
 
     /* Принимаем строку, так как по условию это "Целочисленный тип данных, 10 знаков", но нельзя проверить это
-       аннотацией @Max, тк её параметр value имеет тип Integer, в который не влазит 9_999_999_999 (10 цифр) */
+       аннотацией @Max, тк её параметр value имеет тип Integer, в который не влазит 9_999_999_999 (10 цифр)
+          regexp: строка из 10 любых цифр */
     @Pattern(regexp = "^\\d{10}$", message = "Invalid counterpart's account")
     String accountTo;
 
@@ -30,8 +32,7 @@ public class TransactionInputDto {
     @NotNull(message = "Category can not be empty")
     Category expenseCategory;
 
-    // TODO: 30.03.2024 Раскомментить перед сдачей
-//    @PastOrPresent(message = "Transaction's date must be past or present")
+    @PastOrPresent(message = "Transaction's date must be past or present")
     ZonedDateTime dateTime;
 
     public String getAccountTo() {

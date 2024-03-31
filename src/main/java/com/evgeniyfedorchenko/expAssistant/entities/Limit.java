@@ -24,7 +24,7 @@ public class Limit {
     @Column(columnDefinition = "DECIMAL(35,5)")
     BigDecimal usdValue;
 
-    @OneToMany(mappedBy = "limit")
+    @OneToMany(mappedBy = "limit", fetch = FetchType.EAGER)
     List<Transaction> transactions;
 
 
@@ -74,8 +74,11 @@ public class Limit {
      * @return - возвращает Limit с обновленными транзакциями (локально)
      */
     public Limit addTransaction(Transaction transaction) {
-        this.getTransactions().add(transaction);
-        transaction.setLimit(this);   // TODO: 30.03.2024 Нужна ли эта строчка?
+        if (transactions == null) {
+            transactions = new ArrayList<>();
+        }
+        this.transactions.add(transaction);
+        transaction.setLimit(this);
         return this;
     }
 

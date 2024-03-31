@@ -6,8 +6,10 @@ import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
+import com.evgeniyfedorchenko.expAssistant.exceptions.InvalidControllerParameterException;
 import com.evgeniyfedorchenko.expAssistant.mappers.TransactionOverLimitMapper;
 import com.evgeniyfedorchenko.expAssistant.repositories.TransactionRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,6 +27,10 @@ import static com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName.*;
 public class TransactionServiceImpl implements TransactionService {
 
     public static final Long DEFAULT_ACCOUNT_FROM_VALUE = 9_265_749_302L;
+
+    @Value("${local-zoned-id}")
+    private String localZonedId;
+
     private final TransactionRepository transactionRepository;
     private final LimitService limitService;
     private final ExchangeRateService exchangeRateService;
@@ -44,7 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
      * Внести в таблицу новую транзакцию
      */
     @Override
-    public boolean commitTransaction(TransactionInputDto inputDto) {
+    public void commitTransaction(TransactionInputDto inputDto) {
 
         Transaction newTransaction = new Transaction();
 
@@ -54,9 +60,14 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setSum(BigDecimal.valueOf(inputDto.getSum()));
         newTransaction.setCurrency(inputDto.getCurrency());
 
-        long accountFrom =  inputDto.getAccountFrom() == null
-                ? DEFAULT_ACCOUNT_FROM_VALUE
-                : Long.parseLong(inputDto.getAccountFrom());
+        long accountFrom = 0;
+        try {
+            accountFrom = inputDto.getAccountFrom() == null
+                    ? DEFAULT_ACCOUNT_FROM_VALUE
+                    : Long.parseLong(inputDto.getAccountFrom());
+        } catch (NumberFormatException e) {
+            throw new InvalidControllerParameterException("Invalid param \"accountFrom\": " + accountFrom, e);
+        }
         newTransaction.setAccountFrom(accountFrom);
 
         Limit actualLimit = getActualLimit(inputDto.getExpenseCategory());
@@ -66,7 +77,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction savedTransaction = transactionRepository.save(newTransaction);
         limitService.addTransaction(savedTransaction, actualLimit);
-        return true;
     }
 
     /**
@@ -101,7 +111,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         Optional<Limit> lastLimit = limitService.findLastLimit();
 
-
         if (lastLimit.isEmpty()) {
             return limitService.createNewDefaultLimit(category);
         } else {
@@ -109,8 +118,14 @@ public class TransactionServiceImpl implements TransactionService {
             /* Создаем новый лимит только тогда, когда до последнего лимита прошло меньше времени, чем до начала месяца,
                если прошло столько же, значит это дефолтный лимит, созданный в начале этого месяца,
                если прошло больше - значит это пользовательский лимит */
-            long toStartOfMonth = ChronoZonedDateTime.from(limitService.getStartOfMonth()).toEpochSecond();
-            long toLastLimitStarts = lastLimit.get().getDatetimeStarts().toInstant().atZone(ZoneId.of("Europe/Moscow")).toEpochSecond();
+            long toStartOfMonth = ChronoZonedDateTime.from(limitService.getStartOfMonth())
+                    .toEpochSecond();
+
+            long toLastLimitStarts = lastLimit.get()
+                    .getDatetimeStarts()
+                    .toInstant()
+                    .atZone(ZoneId.of(localZonedId))
+                    .toEpochSecond();
 
             if (toStartOfMonth - toLastLimitStarts < 0) {
                 return limitService.createNewDefaultLimit(category);

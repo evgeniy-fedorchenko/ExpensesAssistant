@@ -5,7 +5,6 @@ import com.evgeniyfedorchenko.expAssistant.exceptions.UnsupportedExchangeRateExc
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.OkHttpClient;
 import org.apache.hc.client5.http.fluent.Request;
 import org.apache.hc.client5.http.fluent.Response;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,17 +17,11 @@ import java.math.RoundingMode;
 @Component
 public class TwelvedataClient {
 
-    private final OkHttpClient client;
-
     @Value("${treveldata.currency.rates.url}")
     private String url;
     @Value("${treveldata.currency.rates.api-key}")
     private String apiKey;
 
-
-    public TwelvedataClient(OkHttpClient client) {
-        this.client = client;
-    }
 
     /* Данный в задании ресурс для получения курса может не поддерживать например KZT/USD, но поддерживать USD/KZT поэтому:
        запрашиваем курс, если его нет, то запрашиваем курс, ему обратный, и свапаем по формуле
@@ -65,7 +58,7 @@ public class TwelvedataClient {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(result);
         BigDecimal rateVale = BigDecimal.valueOf(jsonNode.get("close").asDouble());
-        BigDecimal deInvertedRate = isInverted ? BigDecimal.ONE.divide(rateVale, 5, RoundingMode.HALF_EVEN) : rateVale;
-        return deInvertedRate;
+
+        return isInverted ? BigDecimal.ONE.divide(rateVale, 5, RoundingMode.HALF_EVEN) : rateVale;
     }
 }

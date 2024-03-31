@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TransactionService {
 
-    boolean commitTransaction(TransactionInputDto transactionInputDto);
+    void commitTransaction(TransactionInputDto transactionInputDto);
 
     List<TransactionOverLimitDto> findOverLimitTransactions();
 

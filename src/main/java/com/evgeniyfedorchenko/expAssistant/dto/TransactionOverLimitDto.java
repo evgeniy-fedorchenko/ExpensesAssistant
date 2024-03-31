@@ -1,5 +1,6 @@
 package com.evgeniyfedorchenko.expAssistant.dto;
 
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ public class TransactionOverLimitDto {
     private long accountTo;
     private CurrencyShortName trscnCurrency;
     private BigDecimal transactionSum;
-    private CurrencyShortName expenseCategory;
+    private Category expenseCategory;
     private ZonedDateTime transactionDateTime;
     private BigDecimal limitValue;
     private ZonedDateTime limitDatetimeStarts;
@@ -50,11 +51,11 @@ public class TransactionOverLimitDto {
         this.transactionSum = transactionSum;
     }
 
-    public CurrencyShortName getExpenseCategory() {
+    public Category getExpenseCategory() {
         return expenseCategory;
     }
 
-    public void setExpenseCategory(CurrencyShortName expenseCategory) {
+    public void setExpenseCategory(Category expenseCategory) {
         this.expenseCategory = expenseCategory;
     }
 

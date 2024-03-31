@@ -4,9 +4,13 @@ import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.repositories.LimitRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -14,6 +18,9 @@ import java.util.Optional;
 public class LimitServiceImpl implements LimitService {
 
     private static final BigDecimal DEFAULT_LIMIT_VALUE = new BigDecimal(1_000);
+
+    @Value("${local-zoned-id}")
+    private String localZonedId;
 
     private final LimitRepository limitRepository;
 
@@ -38,7 +45,6 @@ public class LimitServiceImpl implements LimitService {
         newDefaultLimit.setUsdValue(DEFAULT_LIMIT_VALUE);
 
         return limitRepository.save(newDefaultLimit);
-
     }
 
     @Override
@@ -57,5 +63,13 @@ public class LimitServiceImpl implements LimitService {
         Limit updatedLimit = actualLimit.addTransaction(newTransaction);
         limitRepository.save(updatedLimit);
 
+    }
+
+    @Override
+    public ZonedDateTime getStartOfMonth() {
+        Instant now = Instant.now();
+        return now.atZone(ZoneId.of(localZonedId))
+                .withDayOfMonth(1)
+                .with(LocalTime.MIN);
     }
 }

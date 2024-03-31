@@ -5,13 +5,11 @@ import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
 public interface LimitService {
+
     Optional<Limit> findLastLimit();
 
     Limit createNewDefaultLimit(Category category);
@@ -20,10 +18,5 @@ public interface LimitService {
 
     void addTransaction(Transaction newTransaction, Limit actualLimit);
 
-    default ZonedDateTime getStartOfMonth() {
-        Instant now = Instant.now();
-        return now.atZone(ZoneId.of("Europe/Moscow"))
-                .withDayOfMonth(1)
-                .with(LocalTime.MIN);
-    }
+    ZonedDateTime getStartOfMonth();
 }
