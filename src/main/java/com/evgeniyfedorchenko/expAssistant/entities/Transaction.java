@@ -1,5 +1,7 @@
 package com.evgeniyfedorchenko.expAssistant.entities;
 
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
+import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,11 +16,20 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    long accountTo;
+
+    long accountFrom;
+
+    @Column(columnDefinition = "DECIMAL(35,5)")
+    BigDecimal sum;
+
+    CurrencyShortName currency;
+
     Category category;
 
-    BigDecimal dollarSum;
-
     ZonedDateTime dateTime;
+
+    boolean limitExceeded;
 
     @ManyToOne
     @JoinColumn(name = "limit_id")
@@ -33,6 +44,38 @@ public class Transaction {
         this.id = id;
     }
 
+    public long getAccountTo() {
+        return accountTo;
+    }
+
+    public void setAccountTo(long accountTo) {
+        this.accountTo = accountTo;
+    }
+
+    public long getAccountFrom() {
+        return accountFrom;
+    }
+
+    public void setAccountFrom(long accountFrom) {
+        this.accountFrom = accountFrom;
+    }
+
+    public BigDecimal getSum() {
+        return sum;
+    }
+
+    public void setSum(BigDecimal sum) {
+        this.sum = sum;
+    }
+
+    public CurrencyShortName getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(CurrencyShortName currency) {
+        this.currency = currency;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -41,20 +84,20 @@ public class Transaction {
         this.category = category;
     }
 
-    public BigDecimal getDollarSum() {
-        return dollarSum;
-    }
-
-    public void setDollarSum(BigDecimal dollarSum) {
-        this.dollarSum = dollarSum;
-    }
-
     public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
     public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public boolean isLimitExceeded() {
+        return limitExceeded;
+    }
+
+    public void setLimitExceeded(boolean limitExceeded) {
+        this.limitExceeded = limitExceeded;
     }
 
     public Limit getLimit() {
@@ -80,5 +123,19 @@ public class Transaction {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+               "id=" + id +
+               ", accountTo=" + accountTo +
+               ", accountFrom=" + accountFrom +
+               ", sum=" + sum +
+               ", currency=" + currency +
+               ", category=" + category +
+               ", dateTime=" + dateTime +
+               ", limitExceeded=" + limitExceeded +
+               '}';
     }
 }

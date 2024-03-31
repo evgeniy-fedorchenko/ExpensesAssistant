@@ -1,9 +1,11 @@
 package com.evgeniyfedorchenko.expAssistant.entities;
 
+import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,9 +21,10 @@ public class Limit {
 
     ZonedDateTime datetimeStarts;
 
-    BigDecimal value;
+    @Column(columnDefinition = "DECIMAL(35,5)")
+    BigDecimal usdValue;
 
-    @OneToMany(mappedBy = "limit")
+    @OneToMany(mappedBy = "limit", fetch = FetchType.EAGER)
     List<Transaction> transactions;
 
 
@@ -49,20 +52,34 @@ public class Limit {
         this.datetimeStarts = datetimeStarts;
     }
 
-    public BigDecimal getValue() {
-        return value;
+    public BigDecimal getUsdValue() {
+        return usdValue;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setUsdValue(BigDecimal usdValue) {
+        this.usdValue = usdValue;
     }
 
     public List<Transaction> getTransactions() {
-        return transactions;
+        return transactions == null ? new ArrayList<>() : transactions;
     }
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    /**
+     * @param transaction объект Transaction, который нужно добавить
+     *                    в коллекцию List<Transaction> transactions объекта this.Limit
+     * @return - возвращает Limit с обновленными транзакциями (локально)
+     */
+    public Limit addTransaction(Transaction transaction) {
+        if (transactions == null) {
+            transactions = new ArrayList<>();
+        }
+        this.transactions.add(transaction);
+        transaction.setLimit(this);
+        return this;
     }
 
     @Override

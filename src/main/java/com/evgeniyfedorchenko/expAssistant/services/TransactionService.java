@@ -1,17 +1,14 @@
 package com.evgeniyfedorchenko.expAssistant.services;
 
-import com.evgeniyfedorchenko.expAssistant.entities.Limit;
-import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
-
+import com.evgeniyfedorchenko.expAssistant.dto.TransactionInputDto;
+import com.evgeniyfedorchenko.expAssistant.dto.TransactionOverLimitDto;
 
 import java.util.List;
 
 public interface TransactionService {
 
-    boolean commitTransaction(Transaction transaction);
+    void commitTransaction(TransactionInputDto transactionInputDto);
 
-    boolean setLimit(Limit newLimit);
-
-    List<Transaction> findOverLimitTransactions();
+    List<TransactionOverLimitDto> findOverLimitTransactions();
 
 }

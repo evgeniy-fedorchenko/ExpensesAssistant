@@ -1,4 +1,4 @@
-package com.evgeniyfedorchenko.expAssistant.dto;
+package com.evgeniyfedorchenko.expAssistant.enums;
 
 public enum CurrencyShortName {
 
