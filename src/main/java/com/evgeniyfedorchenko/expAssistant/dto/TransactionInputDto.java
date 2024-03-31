@@ -24,7 +24,6 @@ public class TransactionInputDto {
     @NotNull(message = "Currency can not be empty")
     CurrencyShortName currency;
 
-//    @Min(value = 12, message = "min annotation")
     @Positive(message = "Sum must be positive")
     Double sum;
 

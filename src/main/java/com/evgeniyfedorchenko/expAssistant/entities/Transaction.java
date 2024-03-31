@@ -20,6 +20,7 @@ public class Transaction {
 
     long accountFrom;
 
+    @Column(columnDefinition = "DECIMAL(35,5)")
     BigDecimal sum;
 
     CurrencyShortName currency;

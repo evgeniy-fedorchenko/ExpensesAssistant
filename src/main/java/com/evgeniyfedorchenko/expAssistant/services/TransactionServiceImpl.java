@@ -6,6 +6,7 @@ import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
+import com.evgeniyfedorchenko.expAssistant.mappers.TransactionOverLimitMapper;
 import com.evgeniyfedorchenko.expAssistant.repositories.TransactionRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,16 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final LimitService limitService;
     private final ExchangeRateService exchangeRateService;
+    private final TransactionOverLimitMapper trscnOLMapper;
 
     public TransactionServiceImpl(TransactionRepository transactionRepository,
                                   LimitService limitService,
-                                  ExchangeRateService exchangeRateService) {
+                                  ExchangeRateService exchangeRateService,
+                                  TransactionOverLimitMapper trscnOLMapper) {
         this.transactionRepository = transactionRepository;
         this.limitService = limitService;
         this.exchangeRateService = exchangeRateService;
+        this.trscnOLMapper = trscnOLMapper;
     }
 
     /**
@@ -41,14 +45,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public boolean commitTransaction(TransactionInputDto inputDto) {
-        /*
-        - accountTo
-        - sum
-        - currency
-        - category
-        - dateTime
-        - limitExceeded
-        - limit   */
+
         Transaction newTransaction = new Transaction();
 
         newTransaction.setAccountTo(Long.parseLong(inputDto.getAccountTo()));
@@ -77,9 +74,12 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public List<TransactionOverLimitDto> findOverLimitTransactions() {
-        return transactionRepository.findOverLimitTransactions().stream()
-                .peek(t -> t.setAccountFrom(DEFAULT_ACCOUNT_FROM_VALUE))
+
+        List<Object[]> overLimitTransactions = transactionRepository.findOverLimitTransactions();
+        return overLimitTransactions.stream()
+                .map(trscnOLMapper::toDto)
                 .toList();
+
     }
 
     private boolean isLimitExceeded(TransactionInputDto inputDto, Limit actualLimit) {

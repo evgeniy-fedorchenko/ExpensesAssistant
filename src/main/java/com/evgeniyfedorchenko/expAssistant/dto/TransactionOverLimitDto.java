@@ -1,6 +1,5 @@
 package com.evgeniyfedorchenko.expAssistant.dto;
 
-import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 
 import java.math.BigDecimal;
@@ -10,12 +9,12 @@ public class TransactionOverLimitDto {
 
     private long accountFrom;
     private long accountTo;
-    private CurrencyShortName currency;
+    private CurrencyShortName trscnCurrency;
     private BigDecimal transactionSum;
-    private Category category;
+    private CurrencyShortName expenseCategory;
     private ZonedDateTime transactionDateTime;
     private BigDecimal limitValue;
-    private ZonedDateTime limitDateTimeStarts;
+    private ZonedDateTime limitDatetimeStarts;
     private CurrencyShortName limitCurrency;
 
 
@@ -35,12 +34,12 @@ public class TransactionOverLimitDto {
         this.accountTo = accountTo;
     }
 
-    public CurrencyShortName getCurrency() {
-        return currency;
+    public CurrencyShortName getTrscnCurrency() {
+        return trscnCurrency;
     }
 
-    public void setCurrency(CurrencyShortName currency) {
-        this.currency = currency;
+    public void setTrscnCurrency(CurrencyShortName trscnCurrency) {
+        this.trscnCurrency = trscnCurrency;
     }
 
     public BigDecimal getTransactionSum() {
@@ -51,12 +50,12 @@ public class TransactionOverLimitDto {
         this.transactionSum = transactionSum;
     }
 
-    public Category getCategory() {
-        return category;
+    public CurrencyShortName getExpenseCategory() {
+        return expenseCategory;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setExpenseCategory(CurrencyShortName expenseCategory) {
+        this.expenseCategory = expenseCategory;
     }
 
     public ZonedDateTime getTransactionDateTime() {
@@ -75,12 +74,12 @@ public class TransactionOverLimitDto {
         this.limitValue = limitValue;
     }
 
-    public ZonedDateTime getLimitDateTimeStarts() {
-        return limitDateTimeStarts;
+    public ZonedDateTime getLimitDatetimeStarts() {
+        return limitDatetimeStarts;
     }
 
-    public void setLimitDateTimeStarts(ZonedDateTime limitDateTimeStarts) {
-        this.limitDateTimeStarts = limitDateTimeStarts;
+    public void setLimitDatetimeStarts(ZonedDateTime limitDatetimeStarts) {
+        this.limitDatetimeStarts = limitDatetimeStarts;
     }
 
     public CurrencyShortName getLimitCurrency() {

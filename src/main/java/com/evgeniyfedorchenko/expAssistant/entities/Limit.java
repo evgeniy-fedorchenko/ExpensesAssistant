@@ -21,6 +21,7 @@ public class Limit {
 
     ZonedDateTime datetimeStarts;
 
+    @Column(columnDefinition = "DECIMAL(35,5)")
     BigDecimal usdValue;
 
     @OneToMany(mappedBy = "limit")
