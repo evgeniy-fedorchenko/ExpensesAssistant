@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="create-expenses_rates-table.3" author="evgeniy-fedorchenko">
+
+        <createTable tableName="expenses_rates">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="currency_from" type="SMALLINT">
+                <constraints nullable="false" checkConstraint="currency_from BETWEEN 0 AND 2"/>
+            </column>
+            <column name="currency_to" type="SMALLINT">
+                <constraints nullable="false" checkConstraint="currency_to BETWEEN 0 AND 2"/>
+            </column>
+            <column name="exchange_rate" type="DECIMAL(35,5)"/>
+            <column name="calculation_date" type="date"/>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -3,6 +3,7 @@ package com.evgeniyfedorchenko.expAssistant.entities;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -21,12 +22,14 @@ public class Transaction {
     long accountFrom;
 
     @Column(columnDefinition = "DECIMAL(35,5)")
+    @NotNull
     BigDecimal sum;
 
     CurrencyShortName currency;
 
     Category category;
 
+    @NotNull
     ZonedDateTime dateTime;
 
     boolean limitExceeded;

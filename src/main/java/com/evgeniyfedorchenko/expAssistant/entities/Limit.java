@@ -2,6 +2,8 @@ package com.evgeniyfedorchenko.expAssistant.entities;
 
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -17,8 +19,10 @@ public class Limit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @NotNull
     Category forCategory;
 
+    @PastOrPresent(message = "Transaction's date must be past or present")
     ZonedDateTime datetimeStarts;
 
     @Column(columnDefinition = "DECIMAL(35,5)")
