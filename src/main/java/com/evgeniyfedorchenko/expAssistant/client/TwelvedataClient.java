@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * API для взаимодействия с сервером курсов обмена валют <a href="https://twelvedata.com">Twelve Data</a>
+ */
 @Component
 public class TwelvedataClient {
 
@@ -27,6 +30,18 @@ public class TwelvedataClient {
        запрашиваем курс, если его нет, то запрашиваем курс, ему обратный, и свапаем по формуле
           rete = 1 / invertedRate
        после чего возвращаем либо кидаем UnsupportedExchangeRateException, если таких курсов нет */
+
+    /**
+     * Метод для получения актуального курса валют с внешнего источника, данные для доступа к которому должны быть
+     * определены в конфигурационном файле по заданному шаблону A?symbol=B/C&apikey=D, где А - это протокол доменное имя и путь,
+     * В - трехбуквенное наименование валюты продажи,
+     * С - трехбуквенное наименование валюты покупки,
+     * D - ключ для доступа к ресурсу (apikey)
+     * @param from трехбуквенное наименование валюты продажи
+     * @param to трехбуквенное наименование валюты покупки
+     * @return актуальный курс обмена указанный валютной пары в типе BigDecimal
+     * @throws UnsupportedExchangeRateException выбрасывается, если валютная пара (а так же ей обратная) не поддерживается указанным сервером
+     */
     public BigDecimal getCurrencyRate(CurrencyShortName from, CurrencyShortName to) {
 
         String readyUrl = "%s?symbol=%s/%s&apikey=%s".formatted(url, from, to, apiKey);

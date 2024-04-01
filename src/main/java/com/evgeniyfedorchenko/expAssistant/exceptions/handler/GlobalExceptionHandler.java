@@ -36,8 +36,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
     }
 
-    @ExceptionHandler(InvalidControllerParameterException.class)    // Невалидные параметры inputDto
-    public ResponseEntity<String> handleInvalidControllerParameterException(InvalidControllerParameterException e) {
+    @ExceptionHandler({InvalidControllerParameterException.class, InvalidControllerParameterException.class})
+    public ResponseEntity<String> handleInvalidControllerParameterException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 

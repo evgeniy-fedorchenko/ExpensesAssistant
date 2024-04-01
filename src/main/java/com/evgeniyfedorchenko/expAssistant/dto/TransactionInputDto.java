@@ -11,6 +11,10 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.ZonedDateTime;
 
+/**
+ * Класс, представляющий объект, содержащий общую информацию о транзакции. Содержит только валидные значения полей.
+ * Поступает на вход в приложение через конечные точки контроллера
+ */
 @Validated
 public class TransactionInputDto {
 

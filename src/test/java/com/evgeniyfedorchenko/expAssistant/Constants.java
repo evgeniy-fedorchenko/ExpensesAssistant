@@ -56,9 +56,8 @@ public class Constants {
                     int rndCategoryNum = FAKER.random().nextInt(Category.values().length);
                     inputDto.setExpenseCategory(Category.values()[rndCategoryNum]);
 
-//                    String value = String.format("%,5f", FAKER.random().nextDouble(0D, 1000D));
-                    String value = "11.11";
-                    inputDto.setSum(Math.abs(11.11D));
+                    String value = String.format("%.5f", FAKER.random().nextDouble()).replace(",", ".");
+                    inputDto.setSum(Math.abs(Double.parseDouble(value)));
 
                     Instant randomInstant = FAKER.date().past(1, TimeUnit.HOURS).toInstant();
                     inputDto.setDateTime(randomInstant.atZone(ZoneId.of(localZonedId)));

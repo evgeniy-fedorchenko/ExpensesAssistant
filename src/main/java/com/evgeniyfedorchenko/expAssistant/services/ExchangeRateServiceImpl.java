@@ -11,10 +11,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * Класс, содержащий логику получения актуальных курсов предусмотренных валют
+ * */
 @Service
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     private final TwelvedataClient client;
+
     private final ExchangeRateRepository exchangeRateRepository;
 
     public ExchangeRateServiceImpl(TwelvedataClient client,
@@ -23,13 +27,13 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         this.exchangeRateRepository = exchangeRateRepository;
     }
 
+    /**
+     * PostContract-метод, выполняется при запуске приложения. Ищет устаревшие курсы валют (старше одного дня)
+     * в таблице курсов валют и обновляет их
+     * */
     @Override
     @PostConstruct
     public void init() {
-
-        /* При запуске приложения проверяем на актуальность все курсы:
-           берем курс, и если он обновлен раньше, чем сегодня в начале дня, то обновляем:
-           через сеттеры ставим ему новое значение курса и новую дату обновления */
 
         exchangeRateRepository.findOldRates()
                 .forEach(rate -> {
@@ -39,9 +43,14 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                 });
     }
 
-    /* Получаем курс, если его нет - получаем на бирже и сохраняем в бд
-       иначе если он есть, но неактуальный - получаем на бирже актуальный, обновляем в бд и возвращаем
-       иначе (если он есть и актуальный) - просто возвращаем */
+    /**
+     * Метод предоставляет актуальный курс валютной пары. Сначала проверяет наличие данного курса в собственной базе,
+     * а так же его актуальность. Если курс не сохранен/устаревший, то запрашивает у
+     * внешнего источника <a href="https://twelvedata.com/">Twelve Data</a>
+     * @param currencyFrom трехбуквенное название валюты для ПРОДАЖИ
+     * @param currencyTo трехбуквенное название валюты для ПОКУПКИ
+     * @return объект BigDecimal формата %.5f - количество первой валюты в отношении второй
+     * */
     @Override
     public BigDecimal getExchangeRate(CurrencyShortName currencyFrom, CurrencyShortName currencyTo) {
         Optional<ExchangeRate> rateOpt = exchangeRateRepository.findByCurrencyFromAndCurrencyTo(currencyFrom, currencyTo);

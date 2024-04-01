@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * Класс, представляющий сущность транзакции, сохраняемой в таблице "transactions". Имеет связь @ManyToOne к сущности Limit
+ */
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -111,6 +114,9 @@ public class Transaction {
         this.limit = limit;
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public boolean equals(Object otherTransaction) {
         if (this == otherTransaction) {
@@ -123,6 +129,9 @@ public class Transaction {
         return id.equals(transaction.id);
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);

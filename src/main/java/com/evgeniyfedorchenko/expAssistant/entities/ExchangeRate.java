@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Класс, представляющий сущность обменного курса валютной пары, сохраняемой в таблице "expenses_rates"
+ */
 @Entity
 @Table(name = "expenses_rates")
 public class ExchangeRate {
@@ -66,6 +69,9 @@ public class ExchangeRate {
         this.calculationDate = calculationDate;
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public boolean equals(Object otherExpensesRate) {
         if (this == otherExpensesRate) {
@@ -78,6 +84,9 @@ public class ExchangeRate {
         return id.equals(that.id);
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);

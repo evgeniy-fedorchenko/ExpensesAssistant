@@ -21,7 +21,7 @@ import java.util.Optional;
 import static com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName.*;
 
 /**
- * Обрабатываем команды от пользователя
+ * Класс для работы с транзакциями: регистрации новых, а также получения тех, что превысили лимит
  */
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -47,7 +47,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /**
-     * Внести в таблицу новую транзакцию
+     * Метод для регистрации новой транзакции в базе данных. Присваивается последний актуальный лимит (или создается новый, если отсутствует).
+     * Лимит будет уведомлен о новой транзакции и обновлен
+     * @param inputDto объект на базе которого будет построен новый объект Transaction
+     * @throws InvalidControllerParameterException выбрасывается, если значение поля accountFrom невозможно привести к типу long
      */
     @Override
     public void commitTransaction(TransactionInputDto inputDto) {
@@ -80,7 +83,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /**
-     * Получить транзакции сверх лимита
+     * Метод для получения транзакций превысивших установленные лимиты
+     * @return List объектов TransactionOverLimitDto, содержащих данные о транзакции, а также время размер и валюту
+     *         установленного для них лимита, который был превышен
      */
     @Override
     public List<TransactionOverLimitDto> findOverLimitTransactions() {

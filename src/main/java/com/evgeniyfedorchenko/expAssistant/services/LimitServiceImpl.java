@@ -14,6 +14,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+/**
+ * Класс для создания, регистрации и обслуживания объектов типа Limit
+ * */
 @Service
 public class LimitServiceImpl implements LimitService {
 
@@ -28,16 +31,25 @@ public class LimitServiceImpl implements LimitService {
         this.limitRepository = limitRepository;
     }
 
+    /**
+     * Метод для получения актуального лимита транзакций (последнего созданного)
+     * @return Optional.empty(), если в базе данных еще не найдено ни одного лимита или
+     *         Optional.of(Limit), если существует хотя бы один зарегистрированный в базе данных объект Limit
+     * */
     @Override
     public Optional<Limit> findLastLimit() {
         return limitRepository.findByMaxId();
     }
 
+    /**
+     * Метод для создания нового дефолтного лимита транзакций (недоступен с клиента).
+     * Вызывается про регистрации первой транзакции месяца (для указанной категории) и устанавливает время
+     * для создаваемого лимита на начало текущего месяца и сумму в 1_000 USD. Становится новым актуальным лимитом после создания
+     * @param category доступная категория транзакций, для которой необходимо установить лимит
+     * @return запрошенный объект Limit, сохраненный в базе данных
+     * */
     @Override
     public Limit createNewDefaultLimit(Category category) {
-        // TODO: 30.03.2024 Если хватит времени - реализовать помесячное автоматическое обновление лимитов
-        /* Создаем ДЕФОЛТНЫЙ лимит как бы в начале месяца (а по факту в момент первой транзакции в этом месяце) -
-           - имитация автоматического создания дефолтного лимита реально в начале месяца */
         Limit newDefaultLimit = new Limit();
 
         newDefaultLimit.setForCategory(category);
@@ -47,6 +59,12 @@ public class LimitServiceImpl implements LimitService {
         return limitRepository.save(newDefaultLimit);
     }
 
+    /**
+     * Метод для создания нового пользовательского лимита транзакций (доступен с клиента).
+     * Устанавливает фактическое время вызова метода как ZonedDateTime.now(). Становится новым актуальным лимитом после создания
+     * @param forCategory доступная категория транзакций, для которой необходимо установить лимит
+     * @param value сумма устанавливаемого лимита
+     * */
     @Override
     public void createNewCustomLimit(Category forCategory, BigDecimal value) {
         Limit newCastomLimit = new Limit();
@@ -58,6 +76,13 @@ public class LimitServiceImpl implements LimitService {
         limitRepository.save(newCastomLimit);
     }
 
+    /**
+     * Метод для поддержания актуальности поля List transactions в базе данных. Добавляет указанную транзакцию
+     * к указанному лимиту и сохраняет в базе данных
+     * @param newTransaction транзакция, которую нужно добавить в список транзакций существующего лимита
+     *                       (транзакция должна быть предварительно сохранена в базе данных)
+     * @param actualLimit валидный объект Limit, в список транзакций которого необходимо добавить указанную транзакцию
+     * */
     @Override
     public void addTransaction(Transaction newTransaction, Limit actualLimit) {
         Limit updatedLimit = actualLimit.addTransaction(newTransaction);
@@ -65,6 +90,11 @@ public class LimitServiceImpl implements LimitService {
 
     }
 
+    /** Метод для получения начальной точки отчета времени в текущем месяце. Рассчитывается как .now() и сбрасываются
+     * к минимальным показателям значения дней и всех более мелких единиц времени
+     * @return объект ZonedDateTime, как точка отсчета текущего месяца (для зонирования используется регион,
+     *         указанный в конфигурационном файле)
+     * */
     @Override
     public ZonedDateTime getStartOfMonth() {
         Instant now = Instant.now();

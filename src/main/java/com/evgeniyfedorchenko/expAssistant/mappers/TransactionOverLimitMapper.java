@@ -12,12 +12,22 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+/**
+ * Маппер для работы с типом данных TransactionOverLimitDto
+ */
 @Component
 public class TransactionOverLimitMapper {
 
     @Value("${local-zoned-id}")
     private String localZonedId;
 
+    /**
+     * Метод для преобразования массива значений транзакций и установленных для них лимитов
+     * @param result массив значений полей транзакции и лимита, который будет преобразован
+     * @return объект TransactionOverLimitDto, содержащий всю информацию о транзакциях и установленных для них лимитов,
+     *         значения полей TransactionDateTime и LimitDatetimeStarts будут иметь тип данных ZonedDateTime с учетом региона,
+     *         указанного в конфигурационном файле
+     */
     public TransactionOverLimitDto toDto(Object[] result) {
         TransactionOverLimitDto dto = new TransactionOverLimitDto();
 
