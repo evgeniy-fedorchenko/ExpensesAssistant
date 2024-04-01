@@ -91,4 +91,13 @@ public class ExchangeRate {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id +
+               ", currencyFrom=" + currencyFrom +
+               ", currencyTo=" + currencyTo +
+               ", exchangeRate=" + exchangeRate +
+               ", calculationDate=" + calculationDate + "}";
+    }
 }

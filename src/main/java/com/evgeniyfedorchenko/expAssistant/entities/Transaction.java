@@ -139,15 +139,13 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-               "id=" + id +
+        return "{id=" + id +
                ", accountTo=" + accountTo +
                ", accountFrom=" + accountFrom +
                ", sum=" + sum +
                ", currency=" + currency +
                ", category=" + category +
                ", dateTime=" + dateTime +
-               ", limitExceeded=" + limitExceeded +
-               '}';
+               ", limitExceeded=" + limitExceeded + "}";
     }
 }

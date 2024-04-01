@@ -4,6 +4,8 @@ import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.repositories.LimitRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,9 @@ import java.util.Optional;
 public class LimitServiceImpl implements LimitService {
 
     private static final BigDecimal DEFAULT_LIMIT_VALUE = new BigDecimal(1_000);
-
     @Value("${local-zoned-id}")
     private String localZonedId;
+    private final Logger logger = LoggerFactory.getLogger(LimitServiceImpl.class);
 
     private final LimitRepository limitRepository;
 
@@ -38,7 +40,9 @@ public class LimitServiceImpl implements LimitService {
      * */
     @Override
     public Optional<Limit> findLastLimit() {
-        return limitRepository.findByMaxId();
+        Optional<Limit> byMaxId = limitRepository.findByMaxId();
+        logger.info("Successfully found last limit { {} }", byMaxId.toString());
+        return byMaxId;
     }
 
     /**
@@ -56,7 +60,9 @@ public class LimitServiceImpl implements LimitService {
         newDefaultLimit.setDatetimeStarts(getStartOfMonth());
         newDefaultLimit.setUsdValue(DEFAULT_LIMIT_VALUE);
 
-        return limitRepository.save(newDefaultLimit);
+        Limit savedLimit = limitRepository.save(newDefaultLimit);
+        logger.info("Successfully create new default limit {}", savedLimit);
+        return savedLimit;
     }
 
     /**
@@ -67,13 +73,16 @@ public class LimitServiceImpl implements LimitService {
      * */
     @Override
     public void createNewCustomLimit(Category forCategory, BigDecimal value) {
+        logger.debug("Was requested new custom limit for category={}, value={}", forCategory, value);
         Limit newCastomLimit = new Limit();
 
         newCastomLimit.setForCategory(forCategory);
         newCastomLimit.setDatetimeStarts(ZonedDateTime.now());
         newCastomLimit.setUsdValue(value);
 
-        limitRepository.save(newCastomLimit);
+        Limit savedLimit = limitRepository.save(newCastomLimit);
+        logger.info("Successfully create new default Limit {}", savedLimit);
+
     }
 
     /**
@@ -87,6 +96,7 @@ public class LimitServiceImpl implements LimitService {
     public void addTransaction(Transaction newTransaction, Limit actualLimit) {
         Limit updatedLimit = actualLimit.addTransaction(newTransaction);
         limitRepository.save(updatedLimit);
+        logger.info("Add transaction {} to limit {} and save", newTransaction, actualLimit);
 
     }
 
@@ -98,8 +108,10 @@ public class LimitServiceImpl implements LimitService {
     @Override
     public ZonedDateTime getStartOfMonth() {
         Instant now = Instant.now();
-        return now.atZone(ZoneId.of(localZonedId))
+        ZonedDateTime startOfMonth = now.atZone(ZoneId.of(localZonedId))
                 .withDayOfMonth(1)
                 .with(LocalTime.MIN);
+        logger.debug("Was invoked getStartOfMonth(), returned {}", startOfMonth);
+        return startOfMonth;
     }
 }
