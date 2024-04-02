@@ -8,11 +8,9 @@ import com.evgeniyfedorchenko.expAssistant.entities.ExchangeRate;
 import com.evgeniyfedorchenko.expAssistant.entities.Limit;
 import com.evgeniyfedorchenko.expAssistant.entities.Transaction;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
-import com.evgeniyfedorchenko.expAssistant.mappers.TransactionOverLimitMapper;
 import com.evgeniyfedorchenko.expAssistant.repositories.ExchangeRateRepository;
 import com.evgeniyfedorchenko.expAssistant.repositories.LimitRepository;
 import com.evgeniyfedorchenko.expAssistant.repositories.TransactionRepository;
-import com.evgeniyfedorchenko.expAssistant.services.TransactionService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,10 +62,6 @@ public class MainControllerRestTemplateTest {
     @Autowired
     private LimitRepository limitRepository;
 
-    /*   Services   */
-    @Autowired
-    private TransactionService transactionService;
-
     /*   Mocks   */
     @MockBean
     private TwelvedataClient clientMock;
@@ -75,8 +69,6 @@ public class MainControllerRestTemplateTest {
     private MainController mainController;
 
     /*   Others   */
-    @Autowired
-    private TransactionOverLimitMapper trscnOLMapper;
     @Autowired
     private TestUtils testUtils;
     @Autowired
@@ -155,16 +147,27 @@ public class MainControllerRestTemplateTest {
             assertThat(rateRepoCountBeforeInvoke + 1).isEqualTo(exchangeRateRepository.count());
         }
 
+        assertThat(actualTransactions)
+                .hasSize(1);
+
+        /* Тк как expected - это локальный объект в этом тесте, он не прогоняется через алгоритмы приложения, где
+           происходит присваивание лимита и выставление флага limitExceeded (даже одна транзакция может превысить лимит,
+           так как их значения генерятся при инициализации тестовых констант). Следовательно, ему не присвоился свой лимит
+           и limitExceeded, исправим это - посмотрим, превышен ли созданный лимит и поставим limitExceeded = true, если это так */
+        expected.setLimit(createdLimitOpt.get());
+        expected.setLimitExceeded(createdLimitOpt.get().getUsdValue()
+                                          .compareTo
+                                                  (createdLimitOpt.get().getTransactions().stream()
+                                                          .map(Transaction::getSum)
+                                                          .reduce(BigDecimal.ZERO, BigDecimal::add)) < 0);
         /* Комментарий к ignoringFields():
            id - ну тут все понятно, id присваивается в БД
-           limit - тк сравниваем с локальной переменной, ей не присвоен limit (он создается сам в приложении, если нет подходящего)
            dateTime - если доставать из бд объект через приложение, то его дата подвергается форматированию по ZonedId,
-                                                                    так что при ручном изъятии тоже надо это сделать*/
-        assertThat(actualTransactions)
-                .hasSize(1)
+           так что при ручном изъятии тоже надо это сделать*/
+        assertThat(actualTransactions.get(0))
                 .usingRecursiveComparison()
-                .ignoringFields("id", "limit", "dateTime")
-                .isEqualTo(List.of(expected));
+                .ignoringFields("id", "dateTime")
+                .isEqualTo(expected);
 
         // Отдельно форматируем и проверяем дату
         ZonedDateTime actualFormattedZonedDateTime = actualTransactions.get(0)
@@ -181,7 +184,7 @@ public class MainControllerRestTemplateTest {
         actual.setSum(actual.getSum().stripTrailingZeros());
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "limit", "dateTime")
+                .ignoringFields("id", "dateTime")
                 .isEqualTo(expected);
     }
 
@@ -233,11 +236,10 @@ public class MainControllerRestTemplateTest {
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isNotNull();
-        /* Руками берем из БД все транзакции с флагом limitExceeded = true и сравниваем с транзакциями вернувшимся из приложения:
-           в транзакциях из бд обрезаем незначащие нули,
-           а транзакции вернувшиеся с сервера мапим на тип Transaction, чтоб можно было сравнить напрямую
-              TransactionOverLimitDto -> TransactionInputDto -> Transaction */
 
+        /* Руками берем из БД все транзакции с флагом limitExceeded = true и сравниваем с транзакциями вернувшимся из приложения:
+           в транзакциях из бд обрезаем незначащие нули, а транзакции вернувшиеся с сервера мапим на тип Transaction,
+           чтоб можно было сравнить напрямую: TransactionOverLimitDto -> Transaction */
         List<Transaction> overLimitFromDb = transactionRepository.findAll().stream()
                 .filter(Transaction::isLimitExceeded)
                 .peek(transaction -> transaction.setSum(transaction.getSum().stripTrailingZeros()))
@@ -245,7 +247,6 @@ public class MainControllerRestTemplateTest {
 
         List<Transaction> overLimitFromApp = responseEntity.getBody().stream()
                 .map(transactionOverLimit -> testUtils.fromOverLimitDto(transactionOverLimit))
-                .map(transactionsInput -> testUtils.fromDto(transactionsInput))
                 .toList();
 
         assertThat(overLimitFromDb.size()).isEqualTo(responseEntity.getBody().size());
@@ -254,10 +255,10 @@ public class MainControllerRestTemplateTest {
 
         /* Комментарий к ignoringFields():
            id - в пришедшей с сервера объектах нет такого поля, тк (по заданию + эта тех.инфо, ненужная юзеру)
-           идентификатор limit - так же отсутствует в структуре объекта "transactionOverLimitDto"
-           флаг limitExceeded - в пришедших с сервера объектах нет такого поля (по заданию, а так же он там и не нужен,
-           тк сам факт наличия этого объекта в ответе говорит о том, что он "overLimit".
-           Оставшиеся поля: accountFrom, accountTo, sum, currency, category */
+           limit - так же отсутствует в структуре объекта TransactionOverLimitDto, которая была задана в задании
+           limitExceeded - в пришедших с сервера объектах нет такого поля (по заданию), а так же он там и не нужен,
+                           тк сам факт наличия этого объекта в ответе говорит о том, что он "overLimit".
+            Оставшиеся поля, подлежащие сравнению: accountFrom, accountTo, sum, currency, category */
         assertThat(overLimitFromDb)
                 .usingRecursiveComparison()
                 .ignoringFields("id", "limit", "limitExceeded")
