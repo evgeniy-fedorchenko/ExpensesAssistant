@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.evgeniyfedorchenko</groupId>
     <artifactId>expAssistant</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>ExpensesAssistant</name>
     <description>Test task</description>
     <properties>
