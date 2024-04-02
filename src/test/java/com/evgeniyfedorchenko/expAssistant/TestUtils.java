@@ -18,9 +18,6 @@ public class TestUtils {
 
     private static String localZonedId;
 
-    /**
-     * Перед общим сохранением пересчитать limitExceeded
-     */
     public Transaction fromDto(TransactionInputDto inputDto) {
         Transaction transaction = new Transaction();
 
@@ -46,15 +43,16 @@ public class TestUtils {
                 .with(LocalTime.MIN);
     }
 
-    public TransactionInputDto fromOverLimitDto(TransactionOverLimitDto overLimitDto) {
-        TransactionInputDto inputDto = new TransactionInputDto();
+    public Transaction fromOverLimitDto(TransactionOverLimitDto overLimitDto) {
+        Transaction transaction = new Transaction();
 
-        inputDto.setAccountTo(String.valueOf(overLimitDto.getAccountTo()));
-        inputDto.setAccountFrom(String.valueOf(overLimitDto.getAccountFrom()));
-        inputDto.setCurrency(overLimitDto.getTrscnCurrency());
-        inputDto.setSum(overLimitDto.getTransactionSum().doubleValue());
-        inputDto.setExpenseCategory(overLimitDto.getExpenseCategory());
-        inputDto.setDateTime(overLimitDto.getTransactionDateTime());
-        return inputDto;
+        transaction.setAccountTo(overLimitDto.getAccountTo());
+        transaction.setAccountFrom(overLimitDto.getAccountFrom());
+        transaction.setSum(overLimitDto.getTransactionSum().stripTrailingZeros());
+        transaction.setCurrency(overLimitDto.getTrscnCurrency());
+        transaction.setCategory(overLimitDto.getExpenseCategory());
+        transaction.setDateTime(overLimitDto.getTransactionDateTime());
+
+        return transaction;
     }
 }

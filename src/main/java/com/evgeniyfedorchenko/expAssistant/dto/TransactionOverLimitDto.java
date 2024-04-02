@@ -6,6 +6,9 @@ import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+/**
+ * Класс, представляющий объект, содержащий информацию о транзакциях и их лимитах
+ */
 public class TransactionOverLimitDto {
 
     private long accountFrom;

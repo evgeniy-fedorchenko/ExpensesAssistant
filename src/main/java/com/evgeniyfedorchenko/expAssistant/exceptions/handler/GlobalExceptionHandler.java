@@ -1,8 +1,11 @@
 package com.evgeniyfedorchenko.expAssistant.exceptions.handler;
 
 import com.evgeniyfedorchenko.expAssistant.exceptions.InvalidControllerParameterException;
+import com.evgeniyfedorchenko.expAssistant.exceptions.UnsupportedExchangeRateException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,8 @@ import java.util.stream.IntStream;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(DataIntegrityViolationException.class)     // Нарушение целостности БД (нарушение констрейнтов)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
@@ -33,11 +38,20 @@ public class GlobalExceptionHandler {
                         .append(fieldErrors.get(i).getField())
                         .append("\n")
                 );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
+        ResponseEntity<String> body = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
+        logger.debug("In inputDto were found {} invalidParams, response body = {}", fieldErrors.size(), body.getBody());
+        return body;
     }
 
-    @ExceptionHandler(InvalidControllerParameterException.class)    // Невалидные параметры inputDto
+    @ExceptionHandler(InvalidControllerParameterException.class)
     public ResponseEntity<String> handleInvalidControllerParameterException(InvalidControllerParameterException e) {
+        logger.debug("handle {}", e.getClass().getSimpleName());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    // Эти два метода хендлера не объединены, чтобы можно было из параметра получить имя класса исключения для логирования
+    @ExceptionHandler(UnsupportedExchangeRateException.class)
+    public ResponseEntity<String> handleUnsupportedExchangeRateExceptionException(UnsupportedExchangeRateException e) {
+        logger.debug("handle {}", e.getClass().getSimpleName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
@@ -52,6 +66,8 @@ public class GlobalExceptionHandler {
                         .append(constraintViolations.get(i).getMessage())
                         .append("\n")
                 );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
+        ResponseEntity<String> body = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errMessBuilder.toString());
+        logger.debug("In inputParam(s) were found {} invalidValue, response body = {}", constraintViolations.size(), body.getBody());
+        return body;
     }
 }

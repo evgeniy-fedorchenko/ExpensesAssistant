@@ -3,11 +3,15 @@ package com.evgeniyfedorchenko.expAssistant.entities;
 import com.evgeniyfedorchenko.expAssistant.enums.Category;
 import com.evgeniyfedorchenko.expAssistant.enums.CurrencyShortName;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * Класс, представляющий сущность транзакции, сохраняемой в таблице "transactions". Имеет связь @ManyToOne к сущности Limit
+ */
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -21,12 +25,14 @@ public class Transaction {
     long accountFrom;
 
     @Column(columnDefinition = "DECIMAL(35,5)")
+    @NotNull
     BigDecimal sum;
 
     CurrencyShortName currency;
 
     Category category;
 
+    @NotNull
     ZonedDateTime dateTime;
 
     boolean limitExceeded;
@@ -108,6 +114,9 @@ public class Transaction {
         this.limit = limit;
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public boolean equals(Object otherTransaction) {
         if (this == otherTransaction) {
@@ -120,6 +129,9 @@ public class Transaction {
         return id.equals(transaction.id);
     }
 
+    /**
+     * Рассчитывается на основе значения поля id
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -127,15 +139,13 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-               "id=" + id +
+        return "{id=" + id +
                ", accountTo=" + accountTo +
                ", accountFrom=" + accountFrom +
                ", sum=" + sum +
                ", currency=" + currency +
                ", category=" + category +
                ", dateTime=" + dateTime +
-               ", limitExceeded=" + limitExceeded +
-               '}';
+               ", limitExceeded=" + limitExceeded + "}";
     }
 }

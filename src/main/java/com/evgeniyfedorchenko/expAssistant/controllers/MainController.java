@@ -32,6 +32,7 @@ public class MainController {
     @PostMapping(path = "/transaction")
     @Operation(summary = "Register the new transaction")
     public void commitTransaction(@RequestBody @Valid TransactionInputDto transactionInputDto) {
+
         transactionService.commitTransaction(transactionInputDto);
     }
 
