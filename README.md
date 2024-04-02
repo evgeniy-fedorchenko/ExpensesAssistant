@@ -16,10 +16,10 @@
 
 Используемые инструменты и технологии:
      - Java:
-• BigDecimal, Date types, enums
-• Collections, equals and hashCode, Stream API, Lambdas
-• Обработка исключений
-• Code conventions
+• BigDecimal, Date types, enums 
+• Collections, equals and hashCode, Stream API, Lambdas 
+• Обработка исключений 
+• Code conventions 
 • Multithreading
      - Фреймворки, библиотеки и Build Tools:
 • Spring WEB, бины, компоненты, конфигурации
@@ -32,3 +32,18 @@
 • Инструмент миграции Liquibase
      - Docker
 * Dockerfile и docker-compose
+
+Есть несколько способов запустить этот проект, вот самый простой из них. Я предлагаю самый простой из них на мой взгляд,
+это предполагает, что у вас установлен Git и Docker, итак, выполните следующие команды в командной строке на своем компьютере:
+Клонирование репозитория:
+
+git clone https://github.com/skypro-backend/TopProject.git
+
+Загрузка образа базы данных:
+docker pull postgres
+
+Переход в нужную папку:
+cd expAssistant/src/main/docker
+
+И наконец запуск:
+docker-compose up
