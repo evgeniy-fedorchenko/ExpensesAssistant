@@ -32,6 +32,7 @@ ___
 + DTO-Entity mappers
 + Maven (Bill of Materials, dependency management, build plugins)
 + Инструмент миграции Liquibase
++ Логирование slf4j, MDC
 + Swagger UI
                                                                                                       
 #### *Docker*
