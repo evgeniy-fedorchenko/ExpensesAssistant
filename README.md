@@ -26,7 +26,7 @@ ___
  #### *Фреймворки, библиотеки и Build Tools:*
 + Spring Web: бины, компоненты, конфигурации
 + Spring Validaion
-+ Конфигурации Spring Boot автоконфигурация с исключениями
++ Spring Boot автоконфигурация с исключениями
 + ORM (Spring Data JPA, Hibernate): Entities, Transactions, native queries, data mappings
 + PostgreSQL, нормальные формы, отношения таблиц, внешние ключи, подзапросы
 + DTO-Entity mappers
